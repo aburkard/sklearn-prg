@@ -11,6 +11,7 @@ authors = [
 description = "Precision-Recall-Gain curves and metrics for scikit-learn"
 readme = "README.md"
 requires-python = ">=3.8"
+license = "MIT"
 dependencies = [
     "numpy>=1.20",
     "scikit-learn>=1.0",
@@ -18,10 +19,12 @@ dependencies = [
 ]
 classifiers = [
     "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
     "Intended Audience :: Science/Research",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
 
 [project.urls]
 Homepage = "https://github.com/aburkard/sklearn_prg"
+
+[tool.setuptools]
+packages = ["sklearn_prg"]  # Explicitly specify only the sklearn_prg package
