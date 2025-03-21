@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='sklearn_prg',
-    version='0.1.0',
+    version='0.1.1',
     description='Precision-Recall-Gain curves and metrics for scikit-learn',
     readme='README.md',
     author='Andrew Burkard',
