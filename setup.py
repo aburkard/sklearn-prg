@@ -4,6 +4,7 @@ setup(
     name='sklearn_prg',
     version='0.1.0',
     description='Precision-Recall-Gain curves and metrics for scikit-learn',
+    readme='README.md',
     author='Andrew Burkard',
     author_email='andrewburkard@gmail.com',
     url='https://github.com/aburkard/sklearn_prg',
