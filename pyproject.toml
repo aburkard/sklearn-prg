@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "sklearn_prg"
-version = "0.1.2"
+version = "0.1.3"
 authors = [
     { name="Andrew Burkard", email="andrewburkard@gmail.com" },
 ]
@@ -26,6 +26,5 @@ classifiers = [
 [project.urls]
 Homepage = "https://github.com/aburkard/sklearn_prg"
 
-[tool.setuptools.packages.find]
-include = ["sklearn_prg*"]
-exclude = ["images*", "tests*"]
+[tool.setuptools]
+packages = ["sklearn_prg"]
