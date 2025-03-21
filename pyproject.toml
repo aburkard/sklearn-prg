@@ -1,3 +1,27 @@
 [build-system]
-requires = ["setuptools>=42"]
+requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "sklearn_prg"
+version = "0.1.2"
+authors = [
+    { name="Andrew Burkard", email="andrewburkard@gmail.com" },
+]
+description = "Precision-Recall-Gain curves and metrics for scikit-learn"
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = [
+    "numpy>=1.20",
+    "scikit-learn>=1.0",
+    "matplotlib>=3.0",
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+[project.urls]
+Homepage = "https://github.com/aburkard/sklearn_prg"
