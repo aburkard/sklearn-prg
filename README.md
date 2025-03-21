@@ -1,21 +1,17 @@
 # sklearn_prg
 
-A Python module implementing Precision-Recall-Gain curves and metrics compatible with scikit-learn.
+A Python module implementing [Precision-Recall-Gain (PRG) curves](https://papers.nips.cc/paper_files/paper/2015/hash/33e8075e9970de0cfea955afd4644bb2-Abstract.html) and metrics compatible with scikit-learn.
 
 ## Why Precision-Recall-Gain?
 
-Traditional Precision-Recall (PR) curves have scaling inconsistencies:
+Precision-Recall-Gain (PRG) curves improve upon traditional ROC and Precision-Recall curves in heavily imbalanced scenarios (few positives, many negatives). Use PRG when true negatives aren't valuable (e.g., information retrieval, fraud detection).
 
-- Area under PR curves uses arithmetic mean of precision values
-- F₁ score uses harmonic mean of precision and recall
-- PR curves can favor models with lower expected F₁ scores
+### Advantages:
 
-Precision-Recall-Gain (PRG) curves fix these issues:
-
-- Consistent harmonic scaling with F-measures
-- Better model selection through AUPRG
-- Area under PRG curve directly corresponds to expected F₁ score
-- Clear threshold calibration through the convex hull
+- **Stable under imbalance:** Consistent evaluation regardless of class distribution.
+- **Direct interpretation:** AUPRG directly relates to the expected F₁ score.
+- **Improved model selection:** Avoids bias toward inflated metrics caused by imbalance.
+- **Intuitive thresholding:** Convex hull easily identifies optimal thresholds for various Fβ scores.
 
 ## Installation
 
@@ -97,7 +93,7 @@ axs[1].set_aspect('equal', adjustable='box')
 # ----- Precision-Recall-Gain Curve -----
 axs[2].plot(rg_rf, pg_rf, label=f'Random Forest (AUPRG={auprg_rf:.3f})')
 axs[2].plot(rg_lr, pg_lr, label=f'Logistic (AUPRG={auprg_lr:.3f})')
-axs[2].plot([1, 0], [0, 1], linestyle='--', color='black', alpha=0.6, label='Random Classifier')
+axs[2].plot([1, 0], [0, 1], linestyle='-', color='black', alpha=0.6, label='Always Positive Classifier')
 axs[2].set_xlim(0, 1)
 axs[2].set_ylim(0, 1)
 axs[2].set_xlabel('Recall Gain')
