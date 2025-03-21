@@ -27,4 +27,6 @@ classifiers = [
 Homepage = "https://github.com/aburkard/sklearn_prg"
 
 [tool.setuptools]
-packages = ["sklearn_prg"]  # Explicitly specify only the sklearn_prg package
+packages = ["sklearn_prg"]
+[tool.setuptools.packages.find]
+exclude = ["images*", "tests*"]
