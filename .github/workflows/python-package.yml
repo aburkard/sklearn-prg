@@ -12,7 +12,8 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    # Python 3.8 is unavailable on the latest Ubuntu runner.
+    runs-on: ${{ matrix.python-version == '3.8' && 'ubuntu-22.04' || 'ubuntu-latest' }}
     strategy:
       fail-fast: false
       matrix:
