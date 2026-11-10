@@ -1,40 +1,50 @@
+from inspect import signature
+
 import numpy as np
-from sklearn.metrics import auc, precision_recall_curve, make_scorer
+from sklearn.metrics import auc, make_scorer, precision_recall_curve, roc_curve
 
 
 def precision_recall_gain_curve(y_true, y_scores):
-    precision, recall, _ = precision_recall_curve(y_true, y_scores)
-    prevalence = np.mean(y_true)
+    """Return precision gain and decreasing recall gain for binary labels.
 
-    # Explicitly handle all-negative (π=0) and all-positive (π=1) cases
+    Labels may be 0/1 or -1/1, with 1 as the positive class. The curve
+    includes the interpolated recall-gain-zero crossing. Precision gain
+    may be negative; recall gain spans [0, 1]. One-class inputs return
+    zeros, since the gain transformation is undefined in that case.
+    """
+    prevalence = np.mean(np.asarray(y_true) == 1)
+
     if prevalence == 0 or prevalence == 1:
-        precision_gain = np.zeros_like(precision)
-        recall_gain = np.zeros_like(recall)
-        return precision_gain, recall_gain
+        precision, recall, _ = precision_recall_curve(y_true, y_scores)
+        return np.zeros_like(precision), np.zeros_like(recall)
 
-    with np.errstate(divide='ignore', invalid='ignore'):
-        precision_gain = (precision - prevalence) / ((1 - prevalence) * precision)
-        recall_gain = (recall - prevalence) / ((1 - prevalence) * recall)
+    fpr, tpr, _ = roc_curve(y_true, y_scores, drop_intermediate=False)
+    start = np.searchsorted(tpr, prevalence)
 
-    # Replace NaNs and infinities explicitly
-    precision_gain = np.nan_to_num(precision_gain, nan=0.0, posinf=0.0, neginf=0.0)
-    recall_gain = np.nan_to_num(recall_gain, nan=0.0, posinf=0.0, neginf=0.0)
+    # RG=0 occurs at TPR=prevalence; interpolate before transforming.
+    if tpr[start] > prevalence:
+        crossing = np.interp(prevalence, tpr[start - 1:start + 1], fpr[start - 1:start + 1])
+        fpr = np.r_[crossing, fpr[start:]]
+        tpr = np.r_[prevalence, tpr[start:]]
+    else:
+        fpr, tpr = fpr[start:], tpr[start:]
 
-    # Negative gains clipped at 0
-    precision_gain = np.clip(precision_gain, 0, None)
-    recall_gain = np.clip(recall_gain, 0, None)
-
-    # CRITICAL FIX: explicitly set recall_gain=1 when recall=1
-    recall_gain[recall == 1] = 1.0
-
-    return precision_gain, recall_gain
+    precision_gain = 1 - fpr / tpr
+    recall_gain = (tpr - prevalence) / ((1 - prevalence) * tpr)
+    return precision_gain[::-1], recall_gain[::-1]
 
 
 def average_precision_recall_gain(y_true, y_scores):
+    """Return the signed trapezoidal area over recall gain in [0, 1]."""
     pg, rg = precision_recall_gain_curve(y_true, y_scores)
-    sort_idx = np.argsort(rg)
-    rg_sorted, pg_sorted = rg[sort_idx], pg[sort_idx]
-    return auc(rg_sorted, pg_sorted)
+    return auc(rg, pg)
 
 
-average_precision_recall_gain_scorer = make_scorer(average_precision_recall_gain, needs_proba=True)
+if "response_method" in signature(make_scorer).parameters:
+    average_precision_recall_gain_scorer = make_scorer(
+        average_precision_recall_gain, response_method="predict_proba"
+    )
+else:
+    average_precision_recall_gain_scorer = make_scorer(
+        average_precision_recall_gain, needs_proba=True
+    )

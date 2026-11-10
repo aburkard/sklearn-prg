@@ -4,20 +4,29 @@ A Python module implementing [Precision-Recall-Gain (PRG) curves](https://papers
 
 ## Why Precision-Recall-Gain?
 
-Precision-Recall-Gain (PRG) curves improve upon traditional ROC and Precision-Recall curves in heavily imbalanced scenarios (few positives, many negatives). Use PRG when true negatives aren't valuable (e.g., information retrieval, fraud detection).
+Precision-Recall-Gain (PRG) curves express precision and recall relative to class prevalence on a harmonic scale. They provide a way to compare classifiers when precision, recall, and Fβ scores are the quantities of interest.
 
 ### Advantages:
 
-- **Stable under imbalance:** Consistent evaluation regardless of class distribution.
-- **Direct interpretation:** AUPRG directly relates to the expected F₁ score.
-- **Improved model selection:** Avoids bias toward inflated metrics caused by imbalance.
-- **Intuitive thresholding:** Convex hull easily identifies optimal thresholds for various Fβ scores.
+- The always-positive classifier is at recall gain 1, precision gain 0, regardless of prevalence.
+- Straight lines between curve points represent achievable mixtures of the corresponding classifiers.
+- Lines of equal Fβ score are straight in gain space, which helps compare operating points.
+
+AUPRG can change with class prevalence; it is not invariant to class imbalance.
 
 ## Installation
 
 ```bash
 pip install sklearn_prg
 ```
+
+For the plotting example below, install `sklearn_prg[plot]`.
+
+`precision_recall_gain_curve` returns precision gain and decreasing recall gain, including the interpolated recall-gain-zero crossing. Labels may be `0/1` or `-1/1`, with `1` as the positive class.
+
+`average_precision_recall_gain` calculates the signed trapezoidal area over recall gain from 0 to 1. Perfect rankings score 1 and constant scores give 0. Precision gain and AUPRG may be negative; scores are not clipped to `[0, 1]`. For one-class inputs both functions return zeros by convention, since gains are undefined at prevalence 0 or 1.
+
+For cross-validation or model selection, use `average_precision_recall_gain_scorer` with a classifier that implements `predict_proba`.
 
 ## Usage
 
@@ -93,7 +102,7 @@ axs[1].set_aspect('equal', adjustable='box')
 # ----- Precision-Recall-Gain Curve -----
 axs[2].plot(rg_rf, pg_rf, label=f'Random Forest (AUPRG={auprg_rf:.3f})')
 axs[2].plot(rg_lr, pg_lr, label=f'Logistic (AUPRG={auprg_lr:.3f})')
-axs[2].plot([1, 0], [0, 1], linestyle='-', color='black', alpha=0.6, label='Always Positive Classifier')
+axs[2].plot([1, 0], [0, 1], linestyle='-', color='black', alpha=0.6, label='Always Positive F1 Baseline')
 axs[2].set_xlim(0, 1)
 axs[2].set_ylim(0, 1)
 axs[2].set_xlabel('Recall Gain')

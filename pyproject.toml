@@ -11,11 +11,10 @@ authors = [
 description = "Precision-Recall-Gain curves and metrics for scikit-learn"
 readme = "README.md"
 requires-python = ">=3.8"
-license = "MIT"
+license = {text = "MIT"}
 dependencies = [
     "numpy>=1.20",
     "scikit-learn>=1.0",
-    "matplotlib>=3.0",
 ]
 classifiers = [
     "Programming Language :: Python :: 3",
@@ -23,8 +22,11 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
 
+[project.optional-dependencies]
+plot = ["matplotlib>=3.0"]
+
 [project.urls]
-Homepage = "https://github.com/aburkard/sklearn_prg"
+Homepage = "https://github.com/aburkard/sklearn-prg"
 
 [tool.setuptools]
 packages = ["sklearn_prg"]
